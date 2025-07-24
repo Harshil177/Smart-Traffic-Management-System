@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+    /* Global Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .main-content {
+        opacity: 0;
+        transition: opacity 0.8s ease-in;
+    }
+
+    .main-content.show {
+        opacity: 1;
+    }
+
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8fafc;
+        color: #334155;
+        line-height: 1.6;
+        overflow: auto;
+        min-height: 100vh;
+    }
+
+    /* Navigation Bar */
+    nav {
+        background: #ffffff;
+        color: #334155;
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 3px solid #3b82f6;
+    }
+    
+    nav h1 {
+        font-size: 32px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    
+    nav h1:hover {
+        transform: scale(1.05);
+    }
+    
+    .nav-toggle {
+        display: none;
+        cursor: pointer;
+        font-size: 28px;
+        color: #3b82f6;
+        transition: transform 0.3s ease;
+        padding: 8px;
+        border-radius: 8px;
+        background: #f1f5f9;
+    }
+    
+    .nav-toggle:hover {
+        transform: rotate(90deg);
+        background: #e2e8f0;
+    }
+    
+    .nav-links {
+        list-style: none;
+        display: flex;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .nav-links li {
+        display: inline;
+    }
+    
+    .nav-links a {
+        color: #64748b;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        display: block;
+        background: #f8fafc;
+        border: 2px solid transparent;
+    }
+    
+    .nav-links a:hover {
+        background: #3b82f6;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        border-color: #1d4ed8;
+    }
+    
+    /* Show the menu when hamburger is clicked */
+    .nav-links.show {
+        display: flex;
+        animation: slideIn 0.5s ease;
+    }
+    
+    /* Welcome Header - Simplified */
+    .welcome-header {
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .welcome-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.2);
+        z-index: 1;
+    }
+    
+    .welcome-header h2 {
+        font-size: 42px;
+        font-weight: 900;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 2;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .welcome-header p {
+        font-size: 20px;
+        line-height: 1.8;
+        margin: 0 auto;
+        max-width: 800px;
+        position: relative;
+        z-index: 2;
+        opacity: 0.95;
+    }
+
+    /* Main Content Container */
+    .container {
+        display: flex;
+        justify-content: space-between;
+        padding: 40px 40px 0 40px;
+        gap: 40px;
+        align-items: flex-start;
+        max-width: 1400px;
+        margin: 0 auto;
+        min-height: 600px;
+        margin-bottom: 60px;
+    }
+
+    /* Slideshow Container - Fixed Size and Visibility */
+    .slideshow-container {
+        position: relative;
+        width: 55%;
+        height: 500px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: #ffffff;
+        flex-shrink: 0;
+    }
+    
+    .slideshow-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+    }
+    
+    .slide {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.8s ease-in-out;
+    }
+    
+    .slide.active {
+        opacity: 1;
+        z-index: 2;
+    }
+    
+    .slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Slide Navigation Dots */
+    .slide-dots {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+        z-index: 10;
+    }
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .dot.active,
+    .dot:hover {
+        background: #ffffff;
+        transform: scale(1.2);
+    }
+
+    /* Content Card */
+    .content {
+        width: 42%;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+        height: fit-content;
+        flex-shrink: 0;
+    }
+    
+    .content:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        border-color: #3b82f6;
+    }
+    
+    .content h2 {
+        font-size: 32px;
+        margin-bottom: 25px;
+        color: #1e293b;
+        font-weight: 800;
+        line-height: 1.2;
+        position: relative;
+    }
+    
+    .content h2::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 475px;
+        height: 4px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 2px;
+    }
+    
+    .content p {
+        font-size: 17px;
+        line-height: 1.7;
+        color: #475569;
+        text-align: justify;
+        margin-bottom: 20px;
+    }
+
+    /* Features Section */
+    .features-section {
+        background: #ffffff;
+        padding: 60px 40px 40px 40px;
+        margin-top: 0;
+        margin-bottom: 60px;
+    }
+
+    .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .features-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 25px;
+    }
+
+    .features-subtitle {
+        font-size: 18px;
+        color: #64748b;
+        margin-bottom: 40px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .feature-card {
+        background: #f8fafc;
+        padding: 30px 25px;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .feature-card:hover {
+        background: #ffffff;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-color: #3b82f6;
+    }
+
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .feature-card h3 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 12px;
+    }
+
+    .feature-card p {
+        color: #64748b;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+    
+    /* Media Queries for Mobile Responsiveness */
+    @media (max-width: 1024px) {
+        .container {
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 30px 20px;
+        }
+        
+        .slideshow-container,
+        .content {
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .slideshow-container {
+            height: 400px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        nav {
+            padding: 15px 20px;
+        }
+        
+        nav h1 {
+            font-size: 24px;
+        }
+        
+        nav .nav-links {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            position: absolute;
+            top: 80px;
+            left: 0;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.5s ease;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        nav .nav-links a {
+            margin: 5px 0;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+    
+        nav .nav-toggle {
+            display: block;
+        }
+    
+        .nav-links.show {
+            display: flex;
+        }
+        
+        .welcome-header {
+            padding: 40px 15px;
+        }
+        
+        .welcome-header h2 {
+            font-size: 32px;
+        }
+        
+        .welcome-header p {
+            font-size: 16px;
+        }
+        
+        .container {
+            padding: 20px 15px;
+        }
+        
+        .slideshow-container {
+            height: 300px;
+            border-radius: 15px;
+        }
+        
+        .content {
+            padding: 25px 20px;
+            border-radius: 15px;
+        }
+        
+        .content h2 {
+            font-size: 26px;
+        }
+        
+        .content p {
+            font-size: 15px;
+        }
+        
+        .features-section {
+            padding: 40px 20px;
+        }
+        
+        .features-title {
+            font-size: 28px;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #3b82f6;
+        border-radius: 10px;
+        transition: background 0.3s ease;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #1d4ed8;
+    }
+    
+    </style>
+</head>
+<body class="home">
+    <!-- Main Content -->
+    <div class="main-content show" id="mainContent">
+        <!-- Navigation Bar -->
+        <nav>
+            <h1>Smart Traffic System</h1>
+            <div class="nav-toggle" onclick="toggleMenu()">☰</div>
+            <ul class="nav-links">
+                <li><a href="/search">Search</a></li>
+                <li><a href="/live_monitoring">Live Monitoring</a></li>
+                <li><a href="/upload_video">Upload Video</a></li>
+                <li><a href="/results">Results</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Welcome Header -->
+        <div class="welcome-header">
+            <h2>Welcome to the Smart Traffic Management System</h2>
+            <p>Choose an option from the navigation bar to proceed. Our system provides advanced tools for traffic monitoring and management with cutting-edge AI technology.</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container">
+            <!-- Slideshow -->
+            <div class="slideshow-container">
+                <div class="slide active"><img src="/static/images/1.jpg" alt="Traffic Image 1"></div>
+                <div class="slide"><img src="/static/images/2.jpg" alt="Traffic Image 2"></div>
+                <div class="slide"><img src="/static/images/3.jpg" alt="Traffic Image 3"></div>
+                <div class="slide"><img src="/static/images/4.jpg" alt="Traffic Image 4"></div>
+                <div class="slide"><img src="/static/images/5.jpg" alt="Traffic Image 5"></div>
+                
+                <!-- Navigation Dots -->
+                <div class="slide-dots">
+                    <span class="dot active" onclick="currentSlideShow(1)"></span>
+                    <span class="dot" onclick="currentSlideShow(2)"></span>
+                    <span class="dot" onclick="currentSlideShow(3)"></span>
+                    <span class="dot" onclick="currentSlideShow(4)"></span>
+                    <span class="dot" onclick="currentSlideShow(5)"></span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <h2>About the Smart Traffic Management System</h2>
+                <p>A robust and intelligent traffic management system leveraging ANPR (Automatic Number Plate Recognition) and ATCC (Automatic Traffic Classification and Control) to enhance traffic efficiency and safety.</p>
+                
+                <p>The system integrates real-time monitoring, automated detection, and data analysis for seamless traffic regulation and incident management, security, and improved road safety.</p>
+                
+                <p>By integrating computer vision technologies with real-time data processing, these solutions offer a comprehensive approach to solving traffic-related challenges in modern urban environments.</p>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="features-container">
+                <h2 class="features-title">Key Features</h2>
+                <p class="features-subtitle">Discover the powerful capabilities that make our traffic management system the ideal choice for modern cities</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">AI</div>
+                        <h3>AI-Powered Detection</h3>
+                        <p>Advanced computer vision and machine learning algorithms for accurate vehicle and license plate recognition.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Real-time Analytics</h3>
+                        <p>Live traffic monitoring with instant data processing and comprehensive reporting dashboards.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🚦</div>
+                        <h3>Smart Control</h3>
+                        <p>Automated traffic signal optimization and dynamic route management for improved flow efficiency.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('show');
+        }
+
+        // Slideshow JavaScript - Fixed
+        let currentSlide = 0;
+        let slideInterval;
+        const totalSlides = 5;
+
+        function showSlides() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            // Remove active class from all slides and dots
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            // Add active class to current slide and dot
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+            
+            // Move to next slide
+            currentSlide = (currentSlide + 1) % totalSlides;
+        }
+
+        function currentSlideShow(n) {
+            currentSlide = n - 1;
+            clearInterval(slideInterval);
+            
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.dot');
+            
+            // Remove active class from all
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            // Add active class to selected
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+            
+            // Restart automatic slideshow
+            startSlideshow();
+        }
+
+        function startSlideshow() {
+            slideInterval = setInterval(showSlides, 4000);
+        }
+        
+        // Initialize slideshow when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure first slide is visible
+            const firstSlide = document.querySelector('.slide');
+            const firstDot = document.querySelector('.dot');
+            if (firstSlide) firstSlide.classList.add('active');
+            if (firstDot) firstDot.classList.add('active');
+            
+            startSlideshow();
+        });
+    </script>
+</body>
+</html>
